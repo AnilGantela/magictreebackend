@@ -5,6 +5,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const adminRoutes = require("./routes/adminRoutes");
 const productRoutes = require("./routes/productRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 require("express-async-errors");
 
@@ -38,6 +39,7 @@ app.get("/", (req, res) => {
 
 app.use("/admin", adminRoutes);
 app.use("/products", productRoutes);
+app.use("/user", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
