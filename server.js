@@ -5,7 +5,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const adminRoutes = require("./routes/adminRoutes");
 const productRoutes = require("./routes/productRoutes");
-const verifyAdminToken = require("./middlewares/adminAuthentication");
+
 require("express-async-errors");
 
 dotenv.config();
@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/admin", adminRoutes);
-app.use("/products", verifyAdminToken, productRoutes);
+app.use("/products", productRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

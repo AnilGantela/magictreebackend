@@ -44,9 +44,12 @@ const createProduct = async (req, res) => {
   }
 };
 
-const hi = async (req, res) => {
+const getAllProducts = async (req, res) => {
   try {
-    res.status(200).json({ message: "Hello from the product controller!" });
+    const products = await Product.find();
+    res
+      .status(200)
+      .json({ message: "Products fetched successfully", products });
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).json({ message: "Server error." });
@@ -55,5 +58,5 @@ const hi = async (req, res) => {
 
 module.exports = {
   createProduct,
-  hi,
+  getAllProducts,
 };
