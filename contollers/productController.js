@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
 const { categoryValues } = require("../categories");
 const { uploadImage } = require("../utils/uploadImage");
+const Review = require("../models/Review");
 
 const createProduct = async (req, res) => {
   try {
@@ -56,18 +57,29 @@ const getAllProducts = async (req, res) => {
   }
 };
 
+// GET /product/:id
 const getProductById = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findById(id);
 
+    // Fetch product
+    const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
 
-    res.status(200).json({ message: "Product fetched successfully", product });
+    // Fetch reviews for the product
+    const reviews = await Review.find({ product: id })
+      .populate("user", "name email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: "Product fetched successfully",
+      product,
+      reviews,
+    });
   } catch (error) {
-    console.error("Error:", error.message);
+    console.error("Error fetching product:", error.message);
     res.status(500).json({ message: "Server error." });
   }
 };

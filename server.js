@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const adminRoutes = require("./routes/adminRoutes");
 const productRoutes = require("./routes/productRoutes");
 const userRoutes = require("./routes/userRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 require("express-async-errors");
 
@@ -40,6 +41,7 @@ app.get("/", (req, res) => {
 app.use("/admin", adminRoutes);
 app.use("/products", productRoutes);
 app.use("/user", userRoutes);
+app.use("/review", reviewRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
