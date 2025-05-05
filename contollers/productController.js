@@ -93,7 +93,9 @@ const getProductsBySubcategory = async (req, res) => {
       return res.status(400).json({ message: "Invalid subcategory." });
     }
 
-    const products = await Product.find({ subcategory });
+    const products = await Product.find({
+      subcategory: { $regex: new RegExp(`^${subcategory}$`, "i") },
+    });
 
     res.status(200).json({
       message: "Products fetched successfully by subcategory",
