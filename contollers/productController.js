@@ -1,18 +1,22 @@
 const Product = require("../models/Product");
-const { categoryValues } = require("../categories");
+const { categoryValues, subcategoryValues } = require("../categories");
 const { uploadImage } = require("../utils/uploadImage");
 const Review = require("../models/Review");
 
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, stock, discount } = req.body;
+    const { name, description, price, category, subcategory, stock, discount } =
+      req.body;
 
     if (!categoryValues.includes(category)) {
       return res.status(400).json({ message: "Invalid category." });
     }
 
-    let imageUrls = [];
+    if (subcategory && !subcategoryValues.includes(subcategory)) {
+      return res.status(400).json({ message: "Invalid subcategory." });
+    }
 
+    let imageUrls = [];
     if (req.files && req.files.length > 0) {
       try {
         const uploadPromises = req.files.map((file) => uploadImage(file.path));
@@ -29,6 +33,7 @@ const createProduct = async (req, res) => {
       price,
       images: imageUrls,
       category,
+      subcategory: subcategory || null,
       stock,
       discount: discount || 0,
     });
@@ -57,18 +62,14 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-// GET /product/:id
 const getProductById = async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Fetch product
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
 
-    // Fetch reviews for the product
     const reviews = await Review.find({ product: id })
       .populate("user", "name email")
       .sort({ createdAt: -1 });
@@ -84,8 +85,29 @@ const getProductById = async (req, res) => {
   }
 };
 
+const getProductsBySubcategory = async (req, res) => {
+  try {
+    const { subcategory } = req.params;
+
+    if (!subcategoryValues.includes(subcategory)) {
+      return res.status(400).json({ message: "Invalid subcategory." });
+    }
+
+    const products = await Product.find({ subcategory });
+
+    res.status(200).json({
+      message: "Products fetched successfully by subcategory",
+      products,
+    });
+  } catch (error) {
+    console.error("Error fetching products by subcategory:", error.message);
+    res.status(500).json({ message: "Server error." });
+  }
+};
+
 module.exports = {
   createProduct,
   getAllProducts,
   getProductById,
+  getProductsBySubcategory,
 };

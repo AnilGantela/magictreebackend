@@ -1,14 +1,24 @@
-const categoryValues = [
-  "Safety & Security",
-  "Mobile & Accessories",
-  "Computers & Laptops",
-  "TV & Entertainment",
-  "Cameras & Photography",
-  "Home Appliances",
-  "Gaming & Accessories",
-  "Networking & Accessories",
-  "Wearable Technology",
-  "Car Electronics",
-];
+const categories = {
+  Industrial: [],
+  "Security & Safety": ["Biometrics", "CCTV Surveillance"],
+  "Eco Friendly": ["Bags", "Chappals", "Clothes"],
+  "HR Consultancy": [
+    "Internships/Summer Projects",
+    "Man Power Planning",
+    "Training",
+    "Appraisal Systems",
+    "Recruitment/Placements",
+  ],
+  Marketing: [
+    "Market Research",
+    "Product Selling/Buying",
+    "Advertising",
+    "Product Design",
+    "Product Pricing",
+  ],
+};
 
-module.exports = { categoryValues };
+const categoryValues = Object.keys(categories);
+const subcategoryValues = Object.values(categories).flat();
+
+module.exports = { categories, categoryValues, subcategoryValues };

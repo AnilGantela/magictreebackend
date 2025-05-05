@@ -14,5 +14,6 @@ router.post(
 
 router.get("/", productController.getAllProducts);
 router.get("/:id", productController.getProductById);
+router.get("/:subcategory", getProductsBySubcategory);
 
 module.exports = router;
