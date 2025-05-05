@@ -89,13 +89,28 @@ const getProductsBySubcategory = async (req, res) => {
   try {
     const { subcategory } = req.params;
 
-    if (!subcategoryValues.includes(subcategory)) {
+    // Ensure the subcategory check is case-insensitive
+    if (
+      !subcategoryValues.some(
+        (value) => value.toLowerCase() === subcategory.toLowerCase()
+      )
+    ) {
       return res.status(400).json({ message: "Invalid subcategory." });
     }
 
+    // Fetch products by subcategory with case-insensitive regex
     const products = await Product.find({
       subcategory: { $regex: new RegExp(`^${subcategory}$`, "i") },
     });
+
+    // Log products to check if they are fetched correctly
+    console.log("Fetched products:", products);
+
+    if (products.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No products found for this subcategory." });
+    }
 
     res.status(200).json({
       message: "Products fetched successfully by subcategory",
