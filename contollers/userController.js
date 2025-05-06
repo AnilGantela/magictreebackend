@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const SECRET_KEY = process.env.JWT_SECRET || "your_jwt_secret";
 
+// Register new user
 const createUser = async (req, res) => {
   try {
     const { name, email, password, phone, addresses } = req.body;
@@ -24,7 +25,6 @@ const createUser = async (req, res) => {
 
     await newUser.save();
 
-    // Generate JWT token
     const token = jwt.sign({ userId: newUser._id }, SECRET_KEY, {
       expiresIn: "7d",
     });
@@ -45,7 +45,7 @@ const createUser = async (req, res) => {
   }
 };
 
-// User login
+// Login user
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -76,10 +76,10 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Get user by ID
+// Get current user
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id)
+    const user = await User.findById(req.user._id)
       .populate("orders")
       .populate("reviews")
       .populate("purchasedProducts");
@@ -92,12 +92,12 @@ const getUserById = async (req, res) => {
   }
 };
 
-// Update user profile
+// Update current user
 const updateUser = async (req, res) => {
   try {
     const updates = req.body;
 
-    const user = await User.findByIdAndUpdate(req.params.id, updates, {
+    const user = await User.findByIdAndUpdate(req.user._id, updates, {
       new: true,
     });
 
@@ -109,11 +109,11 @@ const updateUser = async (req, res) => {
   }
 };
 
-// Add new address
+// Add address
 const addAddress = async (req, res) => {
   try {
     const { street, city, state, zip, country, isDefault } = req.body;
-    const user = await User.findById(req.userId);
+    const user = await User.findById(req.user._id);
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -132,12 +132,13 @@ const addAddress = async (req, res) => {
   }
 };
 
+// Remove address by index
 const removeAddress = async (req, res) => {
   try {
-    const user = await User.findById(req.userId);
+    const user = await User.findById(req.user._id);
     const addressIndex = parseInt(req.params.index);
 
-    if (!user || isNaN(addressIndex)) {
+    if (!user || isNaN(addressIndex) || !user.addresses[addressIndex]) {
       return res.status(404).json({ message: "User or address not found" });
     }
 
@@ -150,10 +151,10 @@ const removeAddress = async (req, res) => {
   }
 };
 
+// Get all addresses
 const getAllAddresses = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const user = await User.findById(userId);
+    const user = await User.findById(req.user._id);
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -163,10 +164,10 @@ const getAllAddresses = async (req, res) => {
   }
 };
 
-// Set default address by index
+// Set default address
 const setDefaultAddress = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.user._id);
     const index = parseInt(req.params.index);
 
     if (!user || isNaN(index) || !user.addresses[index]) {

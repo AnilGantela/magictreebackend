@@ -1,30 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../contollers/userController"); // fixed typo
+const userController = require("../contollers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
-// Register new user
-router.post("/register", userController.createUser); // was: registerUser
-
-// Login user
+// Register & Login
+router.post("/register", userController.createUser);
 router.post("/login", userController.loginUser);
-router.post("/add-address", authMiddleware, userController.addAddress);
-router.delete(
-  "/remove-address/:index",
-  authMiddleware,
-  userController.removeAddress
-);
+
+// Protected Routes
+router.get("/me", authMiddleware, userController.getUserById);
+router.put("/me", authMiddleware, userController.updateUser);
+
+// Address Management
+router.post("/address", authMiddleware, userController.addAddress);
+router.delete("/address/:index", authMiddleware, userController.removeAddress);
 router.get("/addresses", authMiddleware, userController.getAllAddresses);
-
-// Get user by ID
-router.get("/:id", userController.getUserById);
-
-// Update user
-router.put("/:id", userController.updateUser);
-
-// Set default address by index
 router.patch(
-  "/:id/addresses/:index/default",
+  "/address/:index/default",
   authMiddleware,
   userController.setDefaultAddress
 );
