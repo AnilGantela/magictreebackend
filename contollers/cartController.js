@@ -1,4 +1,4 @@
-const Cart = require("../models/cartModel");
+const Cart = require("../models/Cart");
 
 // Add a product to the user's cart or increment quantity if it exists
 exports.addToCart = async (req, res) => {
