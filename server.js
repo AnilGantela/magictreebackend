@@ -7,6 +7,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const productRoutes = require("./routes/productRoutes");
 const userRoutes = require("./routes/userRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 
 require("express-async-errors");
 
@@ -42,7 +43,7 @@ app.use("/admin", adminRoutes);
 app.use("/products", productRoutes);
 app.use("/user", userRoutes);
 app.use("/review", reviewRoutes);
-
+app.use("/cart", cartRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
