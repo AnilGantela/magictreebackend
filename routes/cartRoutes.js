@@ -6,7 +6,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 router.use(authMiddleware); // Apply auth to all routes
 
 router.post("/add", cartController.addToCart);
-router.get("/:userId", cartController.getCart); // Optional: update to use token
+router.get("/items", cartController.getCart); // Optional: update to use token
 router.put("/update", cartController.updateCartItemQuantity);
 router.delete("/remove", cartController.removeFromCart);
 router.delete("/clear", cartController.clearCart);
