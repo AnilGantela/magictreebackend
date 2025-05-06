@@ -3,7 +3,7 @@ const Cart = require("../models/Cart");
 // Add a product to the user's cart or increment quantity if it exists
 exports.addToCart = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id;
     const { product } = req.body;
 
     let cart = await Cart.findOne({ userId });
@@ -33,7 +33,7 @@ exports.addToCart = async (req, res) => {
 // Get user's cart
 exports.getCart = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id;
 
     const cart = await Cart.findOne({ userId });
 
@@ -51,7 +51,7 @@ exports.getCart = async (req, res) => {
 // Update quantity of a product in the cart
 exports.updateCartItemQuantity = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id;
     const { productId, quantity } = req.body;
 
     const cart = await Cart.findOne({ userId });
@@ -77,7 +77,7 @@ exports.updateCartItemQuantity = async (req, res) => {
 // Remove a specific product from the cart
 exports.removeFromCart = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id;
     const { productId } = req.body;
 
     const cart = await Cart.findOneAndUpdate(
@@ -98,7 +98,7 @@ exports.removeFromCart = async (req, res) => {
 // Clear the entire cart
 exports.clearCart = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id;
 
     const cart = await Cart.findOneAndUpdate(
       { userId },
