@@ -69,7 +69,7 @@ const createOrder = async (req, res) => {
     let razorpayOrder = null;
 
     // If payment method is Razorpay, create a Razorpay order
-    if (paymentMethod === "Razorpay") {
+    if (paymentMethod === "Online payment") {
       const options = {
         amount: totalAmount * 100, // Amount in paisa
         currency: "INR",
@@ -106,7 +106,7 @@ const createOrder = async (req, res) => {
     };
 
     // If Razorpay, send Razorpay keys & order id to frontend
-    if (paymentMethod === "Razorpay") {
+    if (paymentMethod === "Online payment") {
       responsePayload.razorpayOrderId = razorpayOrder.id;
       responsePayload.razorpayKeyId = process.env.RAZORPAY_KEY_ID;
       responsePayload.amount = razorpayOrder.amount;
