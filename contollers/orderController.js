@@ -39,10 +39,10 @@ const createOrder = async (req, res) => {
 
     let totalAmount = 0;
     for (const productItem of products) {
-      const product = await Product.findById(productItem.product);
+      const product = await Product.findById(productItem._id);
       if (!product) {
         return res.status(404).json({
-          message: `Product with ID ${productItem.product} not found.`,
+          message: `Product with ID ${productItem._id} not found.`,
         });
       }
       const discountedPrice =
