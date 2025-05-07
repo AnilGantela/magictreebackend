@@ -3,6 +3,12 @@ const Product = require("../models/Product");
 const User = require("../models/User");
 const Payment = require("../models/Payment");
 
+const Razorpay = require("razorpay");
+const razorpayInstance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
 const createOrder = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -11,18 +17,16 @@ const createOrder = async (req, res) => {
       shippingAddress,
       shippingName,
       phoneNumber,
-      paymentMethod,
+      paymentMethod, // "Cash on Delivery" or "Razorpay"
     } = req.body;
 
     if (!products || products.length === 0) {
       return res.status(400).json({ message: "Products list cannot be empty" });
     }
     if (!shippingName || !phoneNumber || !shippingAddress) {
-      return res
-        .status(400)
-        .json({
-          message: "Shipping name, phone number, and address are required.",
-        });
+      return res.status(400).json({
+        message: "Shipping name, phone number, and address are required.",
+      });
     }
     if (!/^\d{10}$/.test(phoneNumber)) {
       return res
@@ -37,18 +41,16 @@ const createOrder = async (req, res) => {
     for (const productItem of products) {
       const product = await Product.findById(productItem.product);
       if (!product) {
-        return res
-          .status(404)
-          .json({
-            message: `Product with ID ${productItem.product} not found.`,
-          });
+        return res.status(404).json({
+          message: `Product with ID ${productItem.product} not found.`,
+        });
       }
       const discountedPrice =
         product.price - (product.price * product.discount) / 100;
       totalAmount += discountedPrice * productItem.quantity;
     }
 
-    // STEP 1: Create the order first (without payment linked yet)
+    // Create the order in your database
     const newOrder = new Order({
       user: userId,
       shippingName,
@@ -59,37 +61,61 @@ const createOrder = async (req, res) => {
         quantity: item.quantity,
       })),
       totalAmount,
-      status: "Pending",
+      status: paymentMethod === "Cash on Delivery" ? "Confirmed" : "Pending",
     });
 
     const savedOrder = await newOrder.save();
 
-    // STEP 2: Create the Payment document linking to order
+    let razorpayOrder = null;
+
+    // If payment method is Razorpay, create a Razorpay order
+    if (paymentMethod === "Razorpay") {
+      const options = {
+        amount: totalAmount * 100, // Amount in paisa
+        currency: "INR",
+        receipt: `receipt_order_${savedOrder._id}`,
+      };
+
+      razorpayOrder = await razorpayInstance.orders.create(options);
+    }
+
+    // Create a payment record
     const payment = new Payment({
       user: userId,
       order: savedOrder._id,
       amount: totalAmount,
-      method: paymentMethod, // e.g., "UPI" or "Cash on Delivery"
-      status: paymentMethod === "Cash on Delivery" ? "Pending" : "Pending",
-      transactionId: null, // to be filled after payment gateway (if applicable)
+      method: paymentMethod,
+      status: paymentMethod === "Cash on Delivery" ? "Pending" : "Initiated",
+      transactionId: razorpayOrder ? razorpayOrder.id : null,
     });
 
     const savedPayment = await payment.save();
 
-    // STEP 3: Update order with payment reference
+    // Link payment to order
     savedOrder.payment = savedPayment._id;
     await savedOrder.save();
 
-    // Optional: push order ID to user's orders list
+    // Optional: add order ID to user
     await User.findByIdAndUpdate(userId, { $push: { orders: savedOrder._id } });
 
-    res.status(201).json({
+    // Prepare response
+    const responsePayload = {
       message: "Order and Payment created successfully",
       order: savedOrder,
       payment: savedPayment,
-    });
+    };
+
+    // If Razorpay, send Razorpay keys & order id to frontend
+    if (paymentMethod === "Razorpay") {
+      responsePayload.razorpayOrderId = razorpayOrder.id;
+      responsePayload.razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+      responsePayload.amount = razorpayOrder.amount;
+      responsePayload.currency = razorpayOrder.currency;
+    }
+
+    res.status(201).json(responsePayload);
   } catch (error) {
-    console.error("Error creating order:", error.message);
+    console.error("Error creating order:", error);
     res.status(500).json({ message: "Error creating order" });
   }
 };

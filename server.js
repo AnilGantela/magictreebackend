@@ -1,4 +1,5 @@
 const express = require("express");
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -46,6 +47,22 @@ app.use("/user", userRoutes);
 app.use("/review", reviewRoutes);
 app.use("/cart", cartRoutes);
 app.use("/order", orderRoutes);
+
+app.post("/payment/verify", (req, res) => {
+  const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
+
+  const generatedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(razorpayOrderId + "|" + razorpayPaymentId)
+    .digest("hex");
+
+  if (generatedSignature === razorpaySignature) {
+    // Update order status in the database
+    res.json({ success: true });
+  } else {
+    res.status(400).json({ success: false });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
