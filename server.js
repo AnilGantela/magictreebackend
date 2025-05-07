@@ -10,6 +10,9 @@ const userRoutes = require("./routes/userRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const crypto = require("crypto");
+const Payment = require("./models/Payment");
+const Order = require("./models/Order");
 
 require("express-async-errors");
 
@@ -58,7 +61,7 @@ app.use("/review", reviewRoutes);
 app.use("/cart", cartRoutes);
 app.use("/order", orderRoutes);
 
-app.post("/payment/verify", (req, res) => {
+app.post("/payment/verify", async (req, res) => {
   const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
 
   const generatedSignature = crypto
@@ -67,10 +70,40 @@ app.post("/payment/verify", (req, res) => {
     .digest("hex");
 
   if (generatedSignature === razorpaySignature) {
-    // Update order status in the database
-    res.json({ success: true });
+    try {
+      // Find the payment by transactionId (you might have stored razorpayOrderId in transactionId)
+      const payment = await Payment.findOne({ transactionId: razorpayOrderId });
+
+      if (!payment) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Payment record not found" });
+      }
+
+      // Update payment status
+      payment.status = "Completed";
+      payment.transactionId = razorpayPaymentId; // store Razorpay payment ID
+      await payment.save();
+
+      // Update order status (linked by payment.order)
+      const order = await Order.findById(payment.order);
+      if (order) {
+        order.status = "Processing"; // or "Paid", depending on your workflow
+        await order.save();
+      }
+
+      return res.json({
+        success: true,
+        message: "Payment verified, order updated",
+      });
+    } catch (err) {
+      console.error("Error verifying payment:", err);
+      return res.status(500).json({ success: false, message: "Server error" });
+    }
   } else {
-    res.status(400).json({ success: false });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid signature" });
   }
 });
 
