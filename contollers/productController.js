@@ -8,6 +8,7 @@ const createProduct = async (req, res) => {
     const { name, description, price, category, subcategory, stock, discount } =
       req.body;
 
+    // Validate category and subcategory
     if (!categoryValues.includes(category)) {
       return res.status(400).json({ message: "Invalid category." });
     }
@@ -15,6 +16,11 @@ const createProduct = async (req, res) => {
     if (subcategory && !subcategoryValues.includes(subcategory)) {
       return res.status(400).json({ message: "Invalid subcategory." });
     }
+
+    // Calculate the final price after adding 20.5% extra
+    const extraPercentage = 20.5;
+    const extraAmount = (price * extraPercentage) / 100;
+    const finalPrice = price + extraAmount;
 
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
@@ -27,10 +33,11 @@ const createProduct = async (req, res) => {
       }
     }
 
+    // Create the product with the final price
     const newProduct = new Product({
       name,
       description,
-      price,
+      price: finalPrice, // Use the final price after adding the extra percentage
       images: imageUrls,
       category,
       subcategory: subcategory || null,
