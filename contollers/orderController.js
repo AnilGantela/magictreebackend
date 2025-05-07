@@ -39,10 +39,10 @@ const createOrder = async (req, res) => {
 
     let totalAmount = 0;
     for (const productItem of products) {
-      const product = await Product.findById(productItem._id);
+      const product = await Product.findById(productItem.product);
       if (!product) {
         return res.status(404).json({
-          message: `Product with ID ${productItem._id} not found.`,
+          message: `Product with ID ${productItem.product} not found.`,
         });
       }
       const discountedPrice =
@@ -61,7 +61,7 @@ const createOrder = async (req, res) => {
         quantity: item.quantity,
       })),
       totalAmount,
-      status: paymentMethod === "Cash on Delivery" ? "Confirmed" : "Pending",
+      status: "Pending",
     });
 
     const savedOrder = await newOrder.save();
