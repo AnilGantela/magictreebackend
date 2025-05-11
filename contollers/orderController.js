@@ -47,7 +47,8 @@ const createOrder = async (req, res) => {
       }
       const discountedPrice =
         product.price - (product.price * product.discount) / 100;
-      totalAmount += discountedPrice * productItem.quantity;
+
+      totalAmount += Math.round(discountedPrice * productItem.quantity * 100); // in paise
     }
 
     // Create the order in your database
