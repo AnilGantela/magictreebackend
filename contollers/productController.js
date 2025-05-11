@@ -20,7 +20,7 @@ const createProduct = async (req, res) => {
     const numericPrice = Number(price); // or parseFloat(price)
     const extraPercentage = 21;
     const extraAmount = (numericPrice * extraPercentage) / 100;
-    const finalPrice = numericPrice + extraAmount;
+    const finalPrice = Math.round(numericPrice + extraAmount);
 
     let imageUrls = [];
     if (req.files && req.files.length > 0) {

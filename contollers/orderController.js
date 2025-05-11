@@ -72,7 +72,7 @@ const createOrder = async (req, res) => {
     // If payment method is Razorpay, create a Razorpay order
     if (paymentMethod === "Online payment") {
       const options = {
-        amount: totalAmount * 100, // Amount in paisa
+        amount: totalAmount, // Amount in paisa
         currency: "INR",
         receipt: `receipt_order_${savedOrder._id}`,
       };
