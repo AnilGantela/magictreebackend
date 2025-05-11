@@ -22,6 +22,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://magictree.vercel.app",
+  "https://magictreeadmin.vercel.app/",
 ];
 
 app.use(
