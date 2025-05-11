@@ -17,10 +17,10 @@ const createProduct = async (req, res) => {
       return res.status(400).json({ message: "Invalid subcategory." });
     }
 
-    // Calculate the final price after adding 20.5% extra
+    const numericPrice = Number(price); // or parseFloat(price)
     const extraPercentage = 21;
-    const extraAmount = (price * extraPercentage) / 100;
-    const finalPrice = price + extraAmount;
+    const extraAmount = (numericPrice * extraPercentage) / 100;
+    const finalPrice = numericPrice + extraAmount;
 
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
