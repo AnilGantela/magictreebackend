@@ -18,7 +18,7 @@ const createProduct = async (req, res) => {
     }
 
     // Calculate the final price after adding 20.5% extra
-    const extraPercentage = 20.5;
+    const extraPercentage = 21;
     const extraAmount = (price * extraPercentage) / 100;
     const finalPrice = price + extraAmount;
 
