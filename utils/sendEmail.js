@@ -13,17 +13,14 @@ const sendEmail = async (to, subject, text, html) => {
     from: `"Magic Tree Info Solutions" <${process.env.EMAIL_USER}>`,
     to,
     subject,
-    text, // fallback text version
+    text: text || "Please view this email in an HTML-enabled client", // fallback text
+    html: html || text, // use HTML if provided, otherwise use text
   };
-
-  // Only add html if provided
-  if (html) {
-    mailOptions.html = html;
-  }
 
   try {
     await transporter.sendMail(mailOptions);
     console.log(`Email sent to ${to}`);
+    return true;
   } catch (error) {
     console.error("Error sending email:", error);
     throw error;
