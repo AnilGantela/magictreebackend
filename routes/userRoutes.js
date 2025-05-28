@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../contollers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
+const otpController = require("../contollers/otpController");
 
 // Register & Login
 router.post("/register", userController.createUser);
@@ -20,5 +21,9 @@ router.patch(
   authMiddleware,
   userController.setDefaultAddress
 );
+
+router.post("/send-otp", otpController.sendOTP);
+router.post("/verify-otp", otpController.verifyOTP);
+router.post("/reset-password", otpController.resetPassword);
 
 module.exports = router;
