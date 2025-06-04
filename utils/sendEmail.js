@@ -2,10 +2,12 @@ const nodemailer = require("nodemailer");
 
 const sendEmail = async (to, subject, text, html) => {
   const transporter = nodemailer.createTransport({
-    service: "Gmail",
+    host: "mail.magictree.in",
+    port: 465,
+    secure: true,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL_USER, // info@magictree.in
+      pass: process.env.EMAIL_PASS, // actual password
     },
   });
 
@@ -13,8 +15,8 @@ const sendEmail = async (to, subject, text, html) => {
     from: `"Magic Tree Info Solutions" <${process.env.EMAIL_USER}>`,
     to,
     subject,
-    text: text || "Please view this email in an HTML-enabled client", // fallback text
-    html: html || text, // use HTML if provided, otherwise use text
+    text: text || "Please view this email in an HTML-enabled client",
+    html: html || text,
   };
 
   try {
