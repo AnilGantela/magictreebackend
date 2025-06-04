@@ -22,7 +22,8 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://magictree.vercel.app",
-  "https://magictreeadmin.vercel.app", // no trailing slash
+  "https://magictreeadmin.vercel.app",
+  "https://magictree.in", // no trailing slash
 ];
 
 app.use(
