@@ -6,7 +6,7 @@ const sendEmail = async (to, subject, text, html) => {
     port: 465,
     secure: true,
     auth: {
-      user: process.env.EMAIL_USER, // info@magictree.in
+      user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS, // actual password
     },
   });
@@ -20,9 +20,6 @@ const sendEmail = async (to, subject, text, html) => {
   };
 
   try {
-    console.log("EMAIL_USER:", process.env.EMAIL_USER);
-    console.log("EMAIL_PASS is present:", !!process.env.EMAIL_PASS);
-    console.log(`Email sent to ${to}`);
     await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
