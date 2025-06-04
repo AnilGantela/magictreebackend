@@ -21,6 +21,8 @@ const sendEmail = async (to, subject, text, html) => {
 
   try {
     await transporter.sendMail(mailOptions);
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS is present:", !!process.env.EMAIL_PASS);
     console.log(`Email sent to ${to}`);
     return true;
   } catch (error) {
