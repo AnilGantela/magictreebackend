@@ -35,9 +35,13 @@ const createProduct = async (req, res) => {
     // Step 4: Total Razorpay deduction
     const totalRazorpayDeduction = razorpayFee + razorpayGst;
 
-    // Step 5: Final payout after deduction
-    const finalPrice =
-      Math.round((totalChargedToCustomer + totalRazorpayDeduction) * 100) / 100;
+    // Step 5: Final price to charge customer (rounded down to nearest rupee)
+    const finalPrice = Math.floor(
+      totalChargedToCustomer + totalRazorpayDeduction
+    );
+
+    // Output (optional)
+    console.log("Final Price (in rupees):", finalPrice);
 
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
