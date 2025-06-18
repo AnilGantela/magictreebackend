@@ -16,11 +16,28 @@ const createProduct = async (req, res) => {
     if (subcategory && !subcategoryValues.includes(subcategory)) {
       return res.status(400).json({ message: "Invalid subcategory." });
     }
+    const baseProductPrice = Number(price);
 
-    const numericPrice = Number(price); // or parseFloat(price)
-    const extraPercentage = 21;
-    const extraAmount = (numericPrice * extraPercentage) / 100;
-    const finalPrice = Math.round(numericPrice + extraAmount);
+    const productGstPercent = 18;
+    const razorpayFeePercent = 3;
+    const razorpayGstPercent = 18;
+
+    // Step 1: Add 18% GST on the product
+    const productGst = (baseProductPrice * productGstPercent) / 100;
+    const totalChargedToCustomer = baseProductPrice + productGst;
+
+    // Step 2: Calculate Razorpay base fee (3% of totalChargedToCustomer)
+    const razorpayFee = (totalChargedToCustomer * razorpayFeePercent) / 100;
+
+    // Step 3: Calculate GST on Razorpay fee
+    const razorpayGst = (razorpayFee * razorpayGstPercent) / 100;
+
+    // Step 4: Total Razorpay deduction
+    const totalRazorpayDeduction = razorpayFee + razorpayGst;
+
+    // Step 5: Final payout after deduction
+    const finalPrice =
+      Math.round((totalChargedToCustomer + totalRazorpayDeduction) * 100) / 100;
 
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
