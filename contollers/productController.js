@@ -78,9 +78,6 @@ const createProduct = async (req, res) => {
 
     console.log("✅ Final Price to Customer:", finalPriceToCustomer.toFixed(2));
 
-    // Output (optional)
-    console.log("Final Price (in rupees):", finalPrice);
-
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
       try {
