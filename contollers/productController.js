@@ -5,8 +5,16 @@ const Review = require("../models/Review");
 
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, subcategory, stock, discount } =
-      req.body;
+    const {
+      name,
+      description,
+      price,
+      category,
+      subcategory,
+      stock,
+      discount,
+      pGst,
+    } = req.body;
 
     // Validate category and subcategory
     if (!categoryValues.includes(category)) {
@@ -16,33 +24,61 @@ const createProduct = async (req, res) => {
     if (subcategory && !subcategoryValues.includes(subcategory)) {
       return res.status(400).json({ message: "Invalid subcategory." });
     }
-    const baseProductPrice = Number(price);
 
-    const productGstPercent = 18;
-    const razorpayFeePercent = 3;
+    // ---------- Pricing Calculations ----------
+    const baseProductPrice = Number(price); // e.g., ₹100
+
+    const productGstPercent = pGst || 18; // Custom or default 18%
+    const razorpayFeePercent = 2;
     const razorpayGstPercent = 18;
+    const magictreeCommissionPercent = 10;
+    const magictreeGstPercent = 18;
 
-    // Step 1: Add 18% GST on the product
+    // Step 1: Product GST
     const productGst = (baseProductPrice * productGstPercent) / 100;
-    const totalChargedToCustomer = baseProductPrice + productGst;
+    const basePlusProductGst = baseProductPrice + productGst;
 
-    // Step 2: Calculate Razorpay base fee (3% of totalChargedToCustomer)
-    const razorpayFee = (totalChargedToCustomer * razorpayFeePercent) / 100;
-
-    // Step 3: Calculate GST on Razorpay fee
+    // Step 2: Razorpay Fee (on base price)
+    const razorpayFee = (baseProductPrice * razorpayFeePercent) / 100;
     const razorpayGst = (razorpayFee * razorpayGstPercent) / 100;
-
-    // Step 4: Total Razorpay deduction
     const totalRazorpayDeduction = razorpayFee + razorpayGst;
 
-    // Step 5: Final price to charge customer (rounded down to nearest rupee)
-    const finalPrice = Math.floor(
-      totalChargedToCustomer + totalRazorpayDeduction
+    // Step 3: MagicTree Commission (on base + razorpay fee)
+    const magictreeCommissionBase = baseProductPrice + razorpayFee;
+    const magictreeCommission =
+      (magictreeCommissionBase * magictreeCommissionPercent) / 100;
+    const magictreeGst = (magictreeCommission * magictreeGstPercent) / 100;
+    const totalMagictreeDeduction = magictreeCommission + magictreeGst;
+
+    // Final Price Charged to Customer (rounded to 2 decimals)
+    const finalPriceToCustomer =
+      Math.round(
+        (basePlusProductGst +
+          totalRazorpayDeduction +
+          totalMagictreeDeduction) *
+          100
+      ) / 100;
+
+    // --------- Optional Logging ---------
+    console.log("Base Product Price:", baseProductPrice.toFixed(2));
+    console.log("Product GST:", productGst.toFixed(2));
+    console.log("Total After Product GST:", basePlusProductGst.toFixed(2));
+    console.log("Razorpay Fee:", razorpayFee.toFixed(2));
+    console.log("Razorpay GST:", razorpayGst.toFixed(2));
+    console.log("Total Razorpay Deduction:", totalRazorpayDeduction.toFixed(2));
+    console.log(
+      "MagicTree Commission Base:",
+      magictreeCommissionBase.toFixed(2)
     );
+    console.log("MagicTree Commission:", magictreeCommission.toFixed(2));
+    console.log("MagicTree GST:", magictreeGst.toFixed(2));
+    console.log(
+      "Total MagicTree Deduction:",
+      totalMagictreeDeduction.toFixed(2)
+    );
+    console.log("✅ Final Price to Customer:", finalPriceToCustomer.toFixed(2));
 
-    // Output (optional)
-    console.log("Final Price (in rupees):", finalPrice);
-
+    // ---------- Image Upload ----------
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
       try {
@@ -54,11 +90,11 @@ const createProduct = async (req, res) => {
       }
     }
 
-    // Create the product with the final price
+    // ---------- Save Product ----------
     const newProduct = new Product({
       name,
       description,
-      price: finalPrice, // Use the final price after adding the extra percentage
+      price: finalPriceToCustomer,
       images: imageUrls,
       category,
       subcategory: subcategory || null,
