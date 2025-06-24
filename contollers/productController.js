@@ -29,7 +29,7 @@ const createProduct = async (req, res) => {
     const baseProductPrice = Number(price); // e.g., ₹100
 
     const productGstPercent = pGst || 18; // Custom or default 18%
-    const razorpayFeePercent = 2;
+    const razorpayFeePercent = 3;
     const razorpayGstPercent = 18;
     const magictreeCommissionPercent = 10;
     const magictreeGstPercent = 18;
