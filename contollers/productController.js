@@ -59,30 +59,10 @@ const createProduct = async (req, res) => {
           100
       ) / 100;
 
-    // --------- Optional Logging ---------
-    console.log("Base Product Price:", baseProductPrice.toFixed(2));
-    console.log("Product GST:", productGst.toFixed(2));
-    console.log("Total After Product GST:", basePlusProductGst.toFixed(2));
-    console.log("Razorpay Fee:", razorpayFee.toFixed(2));
-    console.log("Razorpay GST:", razorpayGst.toFixed(2));
-    console.log("Total Razorpay Deduction:", totalRazorpayDeduction.toFixed(2));
-    console.log(
-      "MagicTree Commission Base:",
-      magictreeCommissionBase.toFixed(2)
-    );
-    console.log("MagicTree Commission:", magictreeCommission.toFixed(2));
-    console.log("MagicTree GST:", magictreeGst.toFixed(2));
-    console.log(
-      "Total MagicTree Deduction:",
-      totalMagictreeDeduction.toFixed(2)
-    );
-    console.log("✅ Final Price to Customer:", finalPriceToCustomer.toFixed(2));
-
-    // ---------- Image Upload ----------
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
       try {
-        const uploadPromises = req.files.map((file) => uploadImage(file.path));
+        const uploadPromises = req.files.map((file) => uploadImage(file)); // Pass multer file
         imageUrls = await Promise.all(uploadPromises);
       } catch (uploadError) {
         console.error("Image upload error:", uploadError);
