@@ -1,7 +1,7 @@
-// routes/productRoutes.js
 const express = require("express");
 const router = express.Router();
-const upload = require("../config/multer"); // ✅ using your custom multer
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 const productController = require("../contollers/productController");
 const verifyAdminToken = require("../middlewares/adminAuthentication");
 

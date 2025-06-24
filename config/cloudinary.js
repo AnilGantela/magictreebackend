@@ -1,15 +1,11 @@
-const path = require("path");
+const cloudinary = require("cloudinary").v2;
+const dotEnv = require("dotenv");
+dotEnv.config();
 
-const uploadImage = async (file) => {
-  try {
-    // file contains info from multer, like path and filename
-    const filename = file.filename; // already renamed by multer
-    const publicUrl = `https://yourdomain.com/uploads/products/${filename}`;
-    return publicUrl;
-  } catch (error) {
-    console.error("Image upload error:", error.message);
-    throw new Error("Image upload failed.");
-  }
-};
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-module.exports = { uploadImage };
+module.exports = cloudinary;

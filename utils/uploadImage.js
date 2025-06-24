@@ -1,11 +1,29 @@
-// utils/uploadImage.js
-const uploadImage = async (file) => {
+const cloudinary = require("../config/cloudinary");
+
+const uploadImage = async (image, folder = "products") => {
   try {
-    const filename = file.filename;
-    const imageUrl = `https://magictree.in/uploads/products/${filename}`; // Update your domain
-    return imageUrl;
+    let uploadedImage;
+
+    if (image.startsWith("data:image")) {
+      uploadedImage = await cloudinary.uploader.upload(image, {
+        folder,
+        transformation: [
+          { width: 500, height: 500, crop: "fill" },
+          { quality: "auto:low" },
+          { fetch_format: "auto" },
+          { flags: "progressive" },
+          { dpr: "auto" },
+        ],
+      });
+    } else {
+      uploadedImage = await cloudinary.uploader.upload(image, {
+        folder,
+      });
+    }
+
+    return uploadedImage.secure_url;
   } catch (error) {
-    console.error("Image upload error:", error.message);
+    console.error("Cloudinary Upload Error:", error.message);
     throw new Error("Image upload failed.");
   }
 };
