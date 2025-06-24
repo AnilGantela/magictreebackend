@@ -27,7 +27,7 @@ const createProduct = async (req, res) => {
     const baseProductPrice = Number(price);
 
     const productGstPercent = pGst !== undefined ? Number(pGst) : 18;
-    const razorpayFeePercent = 2;
+    const razorpayFeePercent = 3;
     const razorpayGstPercent = 18;
     const magictreeCommissionPercent = 10;
     const magictreeGstPercent = 18;
