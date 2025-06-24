@@ -24,11 +24,11 @@ const createProduct = async (req, res) => {
     if (subcategory && !subcategoryValues.includes(subcategory)) {
       return res.status(400).json({ message: "Invalid subcategory." });
     }
-    const baseProductPrice = Number(price); // e.g., 100
+    const baseProductPrice = Number(price);
 
-    const productGstPercent = 18 || pGst; // GST on product
-    const razorpayFeePercent = 2; // Razorpay fee on base price
-    const razorpayGstPercent = 18; // GST on Razorpay fee
+    const productGstPercent = pGst !== undefined ? Number(pGst) : 18;
+    const razorpayFeePercent = 3;
+    const razorpayGstPercent = 18;
     const magictreeCommissionPercent = 10;
     const magictreeGstPercent = 18;
 
@@ -36,47 +36,26 @@ const createProduct = async (req, res) => {
     const productGst = (baseProductPrice * productGstPercent) / 100;
     const basePlusProductGst = baseProductPrice + productGst;
 
-    // Step 2: Razorpay Fee (on base product price only)
+    // Step 2: Razorpay Fee
     const razorpayFee = (baseProductPrice * razorpayFeePercent) / 100;
     const razorpayGst = (razorpayFee * razorpayGstPercent) / 100;
     const totalRazorpayDeduction = razorpayFee + razorpayGst;
 
-    // Step 3: MagicTree Commission (on base price + Razorpay base fee)
+    // Step 3: MagicTree Commission
     const magictreeCommissionBase = baseProductPrice + razorpayFee;
     const magictreeCommission =
       (magictreeCommissionBase * magictreeCommissionPercent) / 100;
     const magictreeGst = (magictreeCommission * magictreeGstPercent) / 100;
     const totalMagictreeDeduction = magictreeCommission + magictreeGst;
 
-    // Final Price Charged to Customer
+    // ✅ Correct Final Price
     const finalPriceToCustomer =
       Math.round(
-        basePlusProductGst +
+        (basePlusProductGst +
           totalRazorpayDeduction +
-          totalMagictreeDeduction * 100
+          totalMagictreeDeduction) *
+          100
       ) / 100;
-
-    // Output
-    console.log("Base Product Price:", baseProductPrice.toFixed(2));
-    console.log("Product GST:", productGst.toFixed(2));
-    console.log("Total After Product GST:", basePlusProductGst.toFixed(2));
-
-    console.log("Razorpay Fee:", razorpayFee.toFixed(2));
-    console.log("Razorpay GST:", razorpayGst.toFixed(2));
-    console.log("Total Razorpay Deduction:", totalRazorpayDeduction.toFixed(2));
-
-    console.log(
-      "MagicTree Commission Base:",
-      magictreeCommissionBase.toFixed(2)
-    );
-    console.log("MagicTree Commission:", magictreeCommission.toFixed(2));
-    console.log("MagicTree GST:", magictreeGst.toFixed(2));
-    console.log(
-      "Total MagicTree Deduction:",
-      totalMagictreeDeduction.toFixed(2)
-    );
-
-    console.log("✅ Final Price to Customer:", finalPriceToCustomer.toFixed(2));
 
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
