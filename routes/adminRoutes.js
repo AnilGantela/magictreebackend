@@ -9,7 +9,7 @@ const verifyAdminToken = require("../middlewares/adminAuthentication");
 
 // POST /admin/login
 router.post("/login", adminLogin);
-router.get("/orders", verifyAdminToken, getAllOrders);
+router.get("/orders", getAllOrders);
 router.put("/update-order-status", verifyAdminToken, updateOrderStatus);
 
 module.exports = router;
