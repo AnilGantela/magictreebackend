@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const Order = require("../models/Order");
 const sendEmail = require("../utils/sendEmail");
-const Payment = require("../models/paymentModel");
+const Payment = require("../models/Payment");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
