@@ -1,19 +1,43 @@
 const express = require("express");
 const router = express.Router();
+const verifyAdminToken = require("../middlewares/adminAuthentication");
 const {
   adminLogin,
   getAllOrders,
   updateOrderStatus,
   getCodOrders,
   getOnlineOrders,
-} = require("../contollers/adminController");
-const verifyAdminToken = require("../middlewares/adminAuthentication");
+  getOrderStatusStats,
+  getMonthlyOrdersStats,
+  getRevenueByPaymentMethod,
+  getDailyRevenueCurrentMonth,
+  exportOrdersCSV,
+  getRevenueByRange,
+} = require("../controllers/adminController");
 
-// POST /admin/login
+// Admin Auth
 router.post("/login", adminLogin);
+
+// Order Management
 router.get("/orders", verifyAdminToken, getAllOrders);
+router.put("/update-order-status", verifyAdminToken, updateOrderStatus);
 router.get("/cod-orders", verifyAdminToken, getCodOrders);
 router.get("/online-orders", verifyAdminToken, getOnlineOrders);
-router.put("/update-order-status", verifyAdminToken, updateOrderStatus);
+
+// 📊 Analytics Routes
+router.get("/analytics/orders/status", verifyAdminToken, getOrderStatusStats);
+router.post("/orders/monthly-stats", verifyAdminToken, getMonthlyOrdersStats);
+router.get(
+  "/analytics/revenue/payment-method",
+  verifyAdminToken,
+  getRevenueByPaymentMethod
+);
+router.get(
+  "/analytics/revenue/daily",
+  verifyAdminToken,
+  getDailyRevenueCurrentMonth
+);
+router.get("/analytics/export/orders", verifyAdminToken, exportOrdersCSV);
+router.post("/analytics/revenue/range", verifyAdminToken, getRevenueByRange);
 
 module.exports = router;
