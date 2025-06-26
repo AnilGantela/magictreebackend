@@ -13,7 +13,7 @@ const {
   getDailyRevenueCurrentMonth,
   exportOrdersCSV,
   getRevenueByRange,
-} = require("../controllers/adminController");
+} = require("../contollers/adminController");
 
 // Admin Auth
 router.post("/login", adminLogin);
