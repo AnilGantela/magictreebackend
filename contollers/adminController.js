@@ -4,6 +4,7 @@ const sendEmail = require("../utils/sendEmail");
 const Payment = require("../models/Payment");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const verifyAdminToken = require("../middlewares/adminAuthentication");
 
 // GET /orders/cod
 exports.getCodOrders = async (req, res) => {
