@@ -79,8 +79,20 @@ exports.adminLogin = async (req, res) => {
 };
 
 exports.getAllOrders = async (req, res) => {
-  const orders = await Order.find();
-  res.status(200).json({ message: "Orders fetched successfully", orders });
+  const orders = await Order.find()
+    .populate("payment", "status") // Only get the `status` field from Payment
+    .lean(); // Use .lean() to modify the returned plain JS objects
+
+  // Add `paymentStatus` field manually from populated `payment.status`
+  const enrichedOrders = orders.map((order) => ({
+    ...order,
+    paymentStatus: order.payment?.status || "N/A", // or null
+  }));
+
+  res.status(200).json({
+    message: "Orders fetched successfully",
+    orders: enrichedOrders,
+  });
 };
 exports.updateOrderStatus = async (req, res) => {
   const { orderId, status, paymentStatus } = req.body;
