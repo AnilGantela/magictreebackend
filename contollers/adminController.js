@@ -83,8 +83,9 @@ exports.getAllOrders = async (req, res) => {
   res.status(200).json({ message: "Orders fetched successfully", orders });
 };
 exports.updateOrderStatus = async (req, res) => {
-  const { orderId, status } = req.body;
+  const { orderId, status, paymentStatus } = req.body;
 
+  // Validate input
   if (!orderId || !status) {
     return res
       .status(400)
@@ -98,19 +99,36 @@ exports.updateOrderStatus = async (req, res) => {
     "Delivered",
     "Cancelled",
   ];
+  const validPaymentStatuses = ["Initiated", "Pending", "Completed", "Failed"];
+
   if (!validStatuses.includes(status)) {
     return res.status(400).json({ message: "Invalid order status" });
   }
 
+  if (paymentStatus && !validPaymentStatuses.includes(paymentStatus)) {
+    return res.status(400).json({ message: "Invalid payment status" });
+  }
+
   try {
+    // Find order
     const order = await Order.findById(orderId).populate("user");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
+    // Update order status
     order.status = status;
     await order.save();
+
+    // If payment status provided and order has linked payment
+    if (paymentStatus && order.payment) {
+      const payment = await Payment.findById(order.payment);
+      if (payment) {
+        payment.status = paymentStatus;
+        await payment.save();
+      }
+    }
 
     // Send delivery email if status is Delivered
     if (status === "Delivered" && order.user?.email) {
