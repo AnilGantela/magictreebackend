@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 const sendEmail = async (to, subject, text, html) => {
   const transporter = nodemailer.createTransport({
     host: "mail.magictree.in",
-    port: 587,
+    port: 465,
     secure: true,
     auth: {
       user: process.env.EMAIL_USER,
