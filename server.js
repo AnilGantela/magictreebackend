@@ -23,7 +23,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://magictree.vercel.app",
   "https://magictreeadmin.vercel.app",
-  "https://magictree.in", // no trailing slash
+  "https://magictree.in",
+  "https://admin.magictree.in/", // no trailing slash
 ];
 
 app.use(
