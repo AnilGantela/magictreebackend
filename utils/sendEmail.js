@@ -1,29 +1,30 @@
-const nodemailer = require("nodemailer");
+require("dotenv").config();
+const SibApiV3Sdk = require("@sendinblue/client");
+
+const client = new SibApiV3Sdk.TransactionalEmailsApi();
+client.setApiKey(
+  SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY // store your API key in .env
+);
 
 const sendEmail = async (to, subject, text, html) => {
-  const transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: 587,
-    secure: false, // use true if port = 465
-    auth: {
-      user: "97f379001@smtp-brevo.com", // your Brevo login
-      pass: "XHaQNyYhCKTMDkxg", // actual password
-    },
-  });
-
-  const mailOptions = {
-    from: `"Magic Tree Info Solutions" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    text: text || "Please view this email in an HTML-enabled client",
-    html: html || text,
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
+    const sendSmtpEmail = {
+      sender: {
+        email: "support@magictree.in",
+        name: "Magic Tree Info Solutions",
+      },
+      to: [{ email: to }],
+      subject: subject,
+      textContent: text || "Please view this email in an HTML-enabled client",
+      htmlContent: html || text,
+    };
+
+    const response = await client.sendTransacEmail(sendSmtpEmail);
+    console.log("✅ Email sent successfully:", response);
     return true;
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("❌ Error sending email:", error);
     throw error;
   }
 };
