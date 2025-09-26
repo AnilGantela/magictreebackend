@@ -2,12 +2,12 @@ const nodemailer = require("nodemailer");
 
 const sendEmail = async (to, subject, text, html) => {
   const transporter = nodemailer.createTransport({
-    host: "mail.magictree.in",
-    port: 465,
-    secure: true,
+    host: "smtp-relay.brevo.com",
+    port: 587,
+    secure: false, // use true if port = 465
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // actual password
+      user: "97f379001@smtp-brevo.com", // your Brevo login
+      pass: "XHaQNyYhCKTMDkxg", // actual password
     },
   });
 
