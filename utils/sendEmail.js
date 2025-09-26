@@ -1,17 +1,18 @@
-require("dotenv").config();
+require("dotenv").config(); // <-- import dotenv and call config
 const SibApiV3Sdk = require("@sendinblue/client");
 
+// Initialize Brevo API client
 const client = new SibApiV3Sdk.TransactionalEmailsApi();
 client.setApiKey(
   SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY // store your API key in .env
+  process.env.BREVO_API_KEY // your API key in .env
 );
 
 const sendEmail = async (to, subject, text, html) => {
   try {
     const sendSmtpEmail = {
       sender: {
-        email: "support@magictree.in",
+        email: "magictreeindia@gmail.com",
         name: "Magic Tree Info Solutions",
       },
       to: [{ email: to }],
@@ -24,7 +25,7 @@ const sendEmail = async (to, subject, text, html) => {
     console.log("✅ Email sent successfully:", response);
     return true;
   } catch (error) {
-    console.error("❌ Error sending email:", error);
+    console.error("❌ Error sending email:", error.response?.body || error);
     throw error;
   }
 };
