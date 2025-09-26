@@ -24,7 +24,7 @@ const allowedOrigins = [
   "https://magictree.vercel.app",
   "https://magictreeadmin.vercel.app",
   "https://magictree.in",
-  "https://admin.magictree.in/", // no trailing slash
+  "https://admin.magictree.in",
 ];
 
 app.use(
