@@ -189,7 +189,7 @@ const setDefaultAddress = async (req, res) => {
 
 const requestDeleteUser = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, reason } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -239,10 +239,46 @@ const requestDeleteUser = async (req, res) => {
         `;
 
     const textContent = `Your OTP Code: ${otpCode}\n\nThis OTP is valid for 10 minutes.\n\nMagic Tree Info Solutions`;
+    const { name, phone } = user;
+
+    const AdminSubject = `Account Deletion Request from ${email} Magic Tree Info Solutions`;
+
+    const AdminText = `
+${name} has requested account deletion.
+
+User details:
+- Name: ${name}
+- Email: ${email}
+- Phone: ${phone}
+- Reason for deletion: ${reason}
+
+Please process accordingly.
+`;
+
+    const AdminContent = `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+  <h2 style="color: #e34c26;">Account Deletion Request</h2>
+  <p>A user has requested to delete their account. Details are as follows:</p>
+  <ul>
+    <li><strong>Name:</strong> ${name}</li>
+    <li><strong>Email:</strong> ${email}</li>
+    <li><strong>Phone:</strong> ${phone}</li>
+    <li><strong>Reason:</strong> ${reason}</li>
+  </ul>
+  <p>Please process this request accordingly.</p>
+</div>
+`;
+
+    await sendEmail({
+      to: "anilkumar.gantela77@gmail.com",
+      AdminSubject,
+      text: AdminText,
+      html: AdminContent,
+    });
 
     await sendEmail(
       email,
-      "Your OTP Code from Magic Tree Info Solutions",
+      "Your Account deletion Request from Magic Tree Info Solutions",
       textContent,
       htmlContent
     );
@@ -261,7 +297,7 @@ const verifyDeleteUser = async (req, res) => {
     const { email, otp } = req.body;
 
     // Find OTP
-    const record = await Otp.findOne({ email, otp });
+    const record = await OTP.findOne({ email, otp });
     if (!record) return res.status(400).json({ message: "Invalid OTP" });
 
     if (record.expiresAt < new Date()) {

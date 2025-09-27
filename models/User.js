@@ -25,6 +25,12 @@ const userSchema = new mongoose.Schema(
     // References to Order model
     orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 
+    accountStatus: {
+      type: String,
+      enum: ["active", "deactivated"],
+      default: "active",
+    },
+
     // References to purchased Product IDs
     purchasedProducts: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
