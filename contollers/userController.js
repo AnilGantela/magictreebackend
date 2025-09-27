@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const sendEmail = require("../utils/sendEmail");
+const OTP = require("../models/Otp");
 
 const SECRET_KEY = process.env.JWT_SECRET || "your_jwt_secret";
 
@@ -185,6 +187,67 @@ const setDefaultAddress = async (req, res) => {
   }
 };
 
+const requestDeleteUser = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Save OTP in DB with 10 min expiry
+    await Otp.create({
+      email,
+      otp,
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+    });
+
+    // Send OTP via email
+    await sendEmail(
+      email,
+      "Confirm Account Deletion",
+      `Your OTP is ${otp}. It is valid for 10 minutes.`,
+      `<p>Your OTP is <b>${otp}</b>. It is valid for 10 minutes.</p>`
+    );
+
+    return res.json({ message: "OTP sent to email" });
+  } catch (error) {
+    console.error("❌ requestDeleteUser error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// 2️⃣ Step 2: Verify OTP and mark user for deletion
+const verifyDeleteUser = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    // Find OTP
+    const record = await Otp.findOne({ email, otp });
+    if (!record) return res.status(400).json({ message: "Invalid OTP" });
+
+    if (record.expiresAt < new Date()) {
+      return res.status(400).json({ message: "OTP expired" });
+    }
+
+    // Mark user for deletion in 90 days
+    const deletionDate = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+    await User.updateOne({ email }, { deleteAt: deletionDate });
+
+    // Cleanup OTP
+    await Otp.deleteMany({ email });
+
+    return res.json({
+      message: "User marked for deletion in 90 days",
+      deleteAt: deletionDate,
+    });
+  } catch (error) {
+    console.error("❌ verifyDeleteUser error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -194,4 +257,6 @@ module.exports = {
   removeAddress,
   setDefaultAddress,
   getAllAddresses,
+  requestDeleteUser,
+  verifyDeleteUser,
 };

@@ -26,4 +26,7 @@ router.post("/send-otp", otpController.sendOTP);
 router.post("/verify-otp", otpController.verifyOTP);
 router.post("/reset-password", otpController.resetPassword);
 
+router.post("/request-delete-user", userController.requestDeleteUser);
+router.post("/verify-delete-user", userController.verifyDeleteUser);
+
 module.exports = router;
