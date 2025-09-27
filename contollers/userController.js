@@ -271,12 +271,12 @@ Please process accordingly.
 
     const adminMail = "akgak.1025@gmail.com";
 
-    await sendEmail({
-      adminMail,
-      AdminSubject,
+    await sendEmail(
+      "akgak.1025@gmail.com",
+      `Account Deletion Request from ${email} Magic Tree Info Solutions`,
       AdminText,
-      AdminContent,
-    });
+      AdminContent
+    );
 
     await sendEmail(
       email,
