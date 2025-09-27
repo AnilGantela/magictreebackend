@@ -269,11 +269,13 @@ Please process accordingly.
 </div>
 `;
 
+    const adminMail = "akgak.1025@gmail.com";
+
     await sendEmail({
-      email: "akgak.1025@gmail.com",
+      adminMail,
       AdminSubject,
-      text: AdminText,
-      html: AdminContent,
+      AdminText,
+      AdminContent,
     });
 
     await sendEmail(
