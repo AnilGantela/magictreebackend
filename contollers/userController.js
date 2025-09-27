@@ -271,8 +271,8 @@ Please process accordingly.
 
     await sendEmail({
       to: [
-        { email: "anilkumar.gantela77@gmail.com", name: "Admin 1" },
-        { email: "akgak.1025@gmail.com", name: "Admin 2" },
+        { email: "anilkumar.gantela77@gmail.com" },
+        { email: "akgak.1025@gmail.com" },
       ],
       AdminSubject,
       text: AdminText,
