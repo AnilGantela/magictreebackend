@@ -270,7 +270,10 @@ Please process accordingly.
 `;
 
     await sendEmail({
-      to: "anilkumar.gantela77@gmail.com",
+      to: [
+        { email: "anilkumar.gantela77@gmail.com", name: "Admin 1" },
+        { email: "akgak.1025@gmail.com", name: "Admin 2" },
+      ],
       AdminSubject,
       text: AdminText,
       html: AdminContent,
