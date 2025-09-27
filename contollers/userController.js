@@ -197,7 +197,7 @@ const requestDeleteUser = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Save OTP in DB with 10 min expiry
-    await Otp.create({
+    await OTP.create({
       email,
       otp,
       expiresAt: new Date(Date.now() + 10 * 60 * 1000),
