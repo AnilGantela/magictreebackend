@@ -21,7 +21,7 @@ const sendEmail = async (to, subject, text, html) => {
       htmlContent: html || text,
     };
     const response = await client.sendTransacEmail(sendSmtpEmail);
-    console.log("✅ OTP email sent successfully:", response);
+
     console.log("✅ Email sent successfully:");
     return true;
   } catch (error) {
