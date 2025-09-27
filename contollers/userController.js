@@ -194,12 +194,12 @@ const requestDeleteUser = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Save OTP in DB with 10 min expiry
     await OTP.create({
       email,
-      otp,
+      otp: otpCode,
       expiresAt: new Date(Date.now() + 3 * 60 * 1000),
     });
 
@@ -215,7 +215,7 @@ const requestDeleteUser = async (req, res) => {
           <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
             <div style="text-align: center; margin-bottom: 25px;">
               <img src="https://res.cloudinary.com/dfnjxybwp/image/upload/logo_zrouc4.jpg" alt="Magic Tree Info Solutions" style="max-width: 150px; margin-bottom: 15px;">
-              <h2 style="color: #e34c26; margin: 0;">Your One-Time Password (OTP)</h2>
+              <h2 style="color: #e34c26; margin: 0;">Your Account deletion confirmation.(OTP)</h2>
             </div>
     
             <p style="margin: 0 0 16px 0;">Hello,</p>
@@ -225,7 +225,7 @@ const requestDeleteUser = async (req, res) => {
               ${otpCode}
             </div>
     
-            <p style="font-size: 14px; color: #666; margin: 20px 0 16px 0;">This OTP is valid for 10 minutes. Please do not share it with anyone.</p>
+            <p style="font-size: 14px; color: #666; margin: 20px 0 16px 0;">This OTP is valid for 3 minutes. Please do not share it with anyone.</p>
     
             <p style="margin: 0 0 16px 0;">If you didn't request this OTP, please ignore this email or contact support.</p>
     
