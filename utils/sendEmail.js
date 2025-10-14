@@ -12,7 +12,7 @@ const sendEmail = async (to, subject, text, html) => {
   try {
     const sendSmtpEmail = {
       sender: {
-        email: "magictreeindia@gmail.com",
+        email: "no-reply@magictree.in",
         name: "Magic Tree Info Solutions",
       },
       to: [{ email: to }],

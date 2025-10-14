@@ -269,8 +269,6 @@ Please process accordingly.
 </div>
 `;
 
-    const adminMail = "akgak.1025@gmail.com";
-
     await sendEmail(
       "akgak.1025@gmail.com",
       `Account Deletion Request from ${email} Magic Tree Info Solutions`,
