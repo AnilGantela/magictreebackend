@@ -49,13 +49,9 @@ const createProduct = async (req, res) => {
     const totalMagictreeDeduction = magictreeCommission + magictreeGst;
 
     // ✅ Correct Final Price
-    const finalPriceToCustomer =
-      Math.ceil(
-        (basePlusProductGst +
-          totalRazorpayDeduction +
-          totalMagictreeDeduction) *
-          100
-      ) / 100;
+    const finalPriceToCustomer = Math.ceil(
+      basePlusProductGst + totalRazorpayDeduction + totalMagictreeDeduction
+    );
     console.log({
       baseProductPrice,
       productGst,
