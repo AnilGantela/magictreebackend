@@ -50,7 +50,7 @@ const createProduct = async (req, res) => {
 
     // ✅ Correct Final Price
     const finalPriceToCustomer =
-      Math.round(
+      Math.ceil(
         (basePlusProductGst +
           totalRazorpayDeduction +
           totalMagictreeDeduction) *
