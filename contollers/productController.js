@@ -56,6 +56,15 @@ const createProduct = async (req, res) => {
           totalMagictreeDeduction) *
           100
       ) / 100;
+    console.log({
+      baseProductPrice,
+      productGst,
+      razorpayFee,
+      razorpayGst,
+      magictreeCommission,
+      magictreeGst,
+      finalPriceToCustomer,
+    });
 
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
