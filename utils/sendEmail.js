@@ -1,31 +1,38 @@
-require("dotenv").config(); // <-- import dotenv and call config
-const SibApiV3Sdk = require("@sendinblue/client");
+require("dotenv").config();
+const axios = require("axios");
 
-// Initialize Brevo API client
-const client = new SibApiV3Sdk.TransactionalEmailsApi();
-client.setApiKey(
-  SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY // your API key in .env
-);
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
 const sendEmail = async (to, subject, text, html) => {
   try {
-    const sendSmtpEmail = {
-      sender: {
-        email: "no-reply@magictree.in",
-        name: "Magic Tree Info Solutions",
+    const response = await axios.post(
+      BREVO_API_URL,
+      {
+        sender: {
+          email: "no-reply@magictree.in",
+          name: "Magic Tree Info Solutions",
+        },
+        to: [{ email: to }],
+        subject,
+        textContent: text || "Please view this email in an HTML-enabled client",
+        htmlContent: html || text,
       },
-      to: [{ email: to }],
-      subject: subject,
-      textContent: text || "Please view this email in an HTML-enabled client",
-      htmlContent: html || text,
-    };
-    const response = await client.sendTransacEmail(sendSmtpEmail);
+      {
+        headers: {
+          "api-key": process.env.BREVO_API_KEY,
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+      }
+    );
 
-    console.log("✅ Email sent successfully:");
+    console.log("✅ Email sent successfully:", response.data.messageId);
     return true;
   } catch (error) {
-    console.error("❌ Error sending email:", error.response?.body || error);
+    console.error(
+      "❌ Error sending email:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
