@@ -45,9 +45,10 @@ const createOrder = async (req, res) => {
           message: `Product with ID ${productItem.product} not found.`,
         });
       }
-      const discountedPrice =
-        product.price - (product.price * product.discount) / 100;
-
+      const discountedPrice = (
+        product.price -
+        (product.price * product.discount) / 100
+      ).toFixed(2);
       totalAmount += Math.round(discountedPrice * productItem.quantity * 100); // in paise
     }
 
