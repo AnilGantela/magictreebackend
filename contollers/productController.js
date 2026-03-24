@@ -14,7 +14,10 @@ const createProduct = async (req, res) => {
       stock,
       discount,
       pGst,
+      brand,
     } = req.body;
+
+    console.log("REQ BODY:", req.body);
 
     // Validate category and subcategory
     if (!categoryValues.includes(category)) {
@@ -50,7 +53,7 @@ const createProduct = async (req, res) => {
 
     // ✅ Correct Final Price
     const finalPriceToCustomer = Math.ceil(
-      basePlusProductGst + totalRazorpayDeduction + totalMagictreeDeduction
+      basePlusProductGst + totalRazorpayDeduction + totalMagictreeDeduction,
     );
     console.log({
       baseProductPrice,
@@ -82,6 +85,7 @@ const createProduct = async (req, res) => {
       category,
       subcategory: subcategory || null,
       stock,
+      brand,
       discount: discount || 0,
     });
 
@@ -139,7 +143,7 @@ const getProductsBySubcategory = async (req, res) => {
     // Ensure the subcategory check is case-insensitive
     if (
       !subcategoryValues.some(
-        (value) => value.toLowerCase() === subcategory.toLowerCase()
+        (value) => value.toLowerCase() === subcategory.toLowerCase(),
       )
     ) {
       return res.status(400).json({ message: "Invalid subcategory." });
