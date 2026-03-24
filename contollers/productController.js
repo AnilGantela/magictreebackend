@@ -17,8 +17,6 @@ const createProduct = async (req, res) => {
       brand,
     } = req.body;
 
-    console.log("REQ BODY:", req.body);
-
     // Validate category and subcategory
     if (!categoryValues.includes(category)) {
       return res.status(400).json({ message: "Invalid category." });
